@@ -1,0 +1,11 @@
+Package: RPTT
+Type: Package
+Title: Web-Based PTT Crawler Package
+Version: 0.0.1
+Date: 2015-05-12
+Author: Chia-Chi Chang<c3h3.tw@gmail.com>, Chih-Cheng Liang<chihchengliang@gmail.com>
+Maintainer: Chia-Chi Chang<c3h3.tw@gmail.com>
+Description: Retrive posts from PTT Bulletin Board System,
+  the largest terminal-based bulletin board system (BBS) based in Taiwan.
+License: FreeBSD
+Depends: dplyr (>= 0.4.3), httr, CSS, XML
