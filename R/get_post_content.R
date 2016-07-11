@@ -21,16 +21,16 @@ get_post_content = function(post_url, max_error_time = 3) {
   }
   res <- GET(post_url, set_cookies(over18 = 1))
 
-  error_time = 0
-  while (error_time < max_error_time && http_error(res)) {
+  error_time = 1
+  while (error_time <= max_error_time && http_error(res)) {
     Sys.sleep(0.5)
-    error_time = error_time + 1
-    message(sprintf("Connection error [%s]: %s",
+    message(sprintf("Connection error (try %s) [%s]: %s",
+                    error_time ,
                     status_code(res),
                     post_url))
     res <- GET(post_url, set_cookies(over18 = 1))
-
-    if (error_time == max_error_time) {
+    error_time = error_time + 1
+    if (error_time > max_error_time) {
       return(NULL)
     }
   }
