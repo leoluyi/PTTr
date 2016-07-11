@@ -4,7 +4,7 @@
 \alias{get_all_posts}
 \title{get_all_posts}
 \usage{
-get_all_posts(board_name, max_post = 1000, ...)
+get_all_posts(board_name, max_post = 1000, parallel = NULL, ...)
 }
 \arguments{
 \item{board_name}{PTT board name}
@@ -20,7 +20,7 @@ data.table
 Get all posts from a given board name
 }
 \examples{
-get_all_posts("gissiping")
+get_all_posts("gossiping")
 
 }
 

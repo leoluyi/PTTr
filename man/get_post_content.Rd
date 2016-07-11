@@ -4,7 +4,7 @@
 \alias{get_post_content}
 \title{getPostData}
 \usage{
-get_post_content(post_url, max_error_time = 3)
+get_post_content(post_url, max_error_time = 3, verbose = TRUE)
 }
 \arguments{
 \item{post_url}{URL of a post.}

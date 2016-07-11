@@ -4,10 +4,10 @@
 \alias{get_url_listpage}
 \title{get_url_listpage}
 \usage{
-get_url_listpage(boardName)
+get_url_listpage(board_name)
 }
 \arguments{
-\item{boardName}{The name of a board.}
+\item{board_name}{The name of a board.}
 }
 \description{
 Get urls of the list pages, each contains certain posts of the input board.
