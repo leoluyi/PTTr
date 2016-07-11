@@ -59,8 +59,7 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   postData$post_time <- metaTemp[3]
 
   postData$post_url <- post_url
-  postData$post_id <- gsub("[/]|\\.html", "",
-                          unlist(strsplit(post_url, postData$board))[[2]])
+  postData$post_id <- str_match(post_url, "([^/]+)\\.html")[,2]
   postData$post_text = node %>%
     rvest::html_nodes("*#main-content") %>%
     as.character() %>%
