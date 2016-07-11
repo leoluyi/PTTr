@@ -10,7 +10,6 @@
 #' @examples
 #' get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")
 #'
-#' @importFrom dplyr bind_rows
 #' @export
 get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   # function input: postUrl
@@ -37,13 +36,15 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
     }
   }
 
-  node = content(res, encoding = "UTF-8")
+  node <- content(res, encoding = "UTF-8")
 
-  postData = list()
+  postData <- list()
   # postData$board = node %>%
   #   rvest::html_nodes(".article-metaline-right > .article-meta-value") %>%
   #   rvest::html_text()
-  postData$board <- post_url %>% str_match("https?://www.ptt.cc/bbs/([^/]+)")
+  postData$board <- post_url %>%
+    str_match("https?://www.ptt.cc/bbs/([^/]+)") %>%
+    .[,2]
 
   metaTemp <- node %>%
     rvest::html_nodes(".article-metaline > .article-meta-value") %>%
@@ -52,42 +53,58 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   postData$author <- metaTemp[1]
   postData$author_ip = node %>%
     html_text() %>%
-    str_match_all('(?:From|來自): ([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
+    str_match_all('(?:From|來自|編輯):\\s(?:\\w+\\s)?[(]([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
     .[[1]] %>% .[,2] %>%
-    tail(1)  # select last ip
+    tail(1)  # select last IP in case of editing
+
   postData$title <- metaTemp[2]
   postData$post_time <- metaTemp[3]
 
   postData$post_url <- post_url
   postData$post_id <- str_match(post_url, "([^/]+)\\.html")[,2]
-  postData$post_text = node %>%
+  postData$post_text <- node %>%
     rvest::html_nodes("*#main-content") %>%
     as.character() %>%
     str_replace_all('(?s)\\<div class="push"\\>.*\\<\\/div\\>', "") %>% # clear push
     str_replace_all('(?s).*\\<span class="article-meta-value"\\>.*\\d{2}:\\d{2}:\\d{2}[ ]\\d{4}\\<\\/span\\>', "") %>%
-    read_html() %>%
+    xml2::read_html() %>%
     html_text() %>%
     str_replace('(?s)--\\n\\u203b \\u767c\\u4fe1\\u7ad9: \\u6279\\u8e22\\u8e22\\u5be6\\u696d\\u574a.*$', "")
 
-  push_df_data <- lapply(node %>%
-                          rvest::html_nodes("div.push"),
-                        function (x) {
-                          push <- html_text(html_nodes(x, "span"))
-                          push <- dplyr::data_frame(
-                            push_tag = str_trim(push[1]),
-                            push_uid = str_trim(push[2]),
-                            push_text = str_replace(push[3], "^:", ""),
-                            push_ip =  str_extract(
-                              str_trim(push[4]),
-                              "^(?:\\d{2,3}\\.){3}\\d{2,3}"),
-                            push_time = str_extract(
-                              str_trim(push[4]),
-                              "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
-                        }) %>% dplyr::bind_rows()
+  ## replace NULL with NA for making data.frame
+  null_to_na <- function(x) {
+    x[sapply(x, is.null)] <- NA
+    x[sapply(x, function(x) !as.logical(length(x)))] <- NA_character_
+    return(x)
+  }
+  postData <- null_to_na(postData)
 
-  push_df <- cbind(post_id = postData$post_id,
-                   post_url = post_url,
-                   push_df_data)
+  ## push data
+  push_df <- dplyr::data_frame(push_tag = character(),
+                               push_uid = character(),
+                               push_text = character(),
+                               push_ip = character(),
+                               push_time = character())
+  push_nodes <- node %>% rvest::html_nodes("div.push")
+  if (length(push_nodes)) {
+    push_rows <- lapply(push_nodes,
+                      function (x) {
+                        push_text <- html_text(html_nodes(x, "span"))
+                        push <- dplyr::data_frame(
+                          push_tag = str_trim(push_text[1]),
+                          push_uid = str_trim(push_text[2]),
+                          push_text = str_replace(push_text[3], "^:", ""),
+                          push_ip =  str_extract(
+                            str_trim(push_text[4]),
+                            "^(?:\\d{2,3}\\.){3}\\d{2,3}"),
+                          push_time = str_extract(
+                            str_trim(push_text[4]),
+                            "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
+                      }) %>% dplyr::bind_rows()
+    push_df <- push_df %>% dplyr::bind_rows(push_rows)
+    push_df$post_id <- postData$post_id
+    push_df$post_url <- post_url
+  }
 
   # function output:
   structure(list(post_main = postData,
