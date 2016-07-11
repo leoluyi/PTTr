@@ -12,7 +12,7 @@
 #'
 #' @importFrom dplyr bind_rows
 #' @export
-get_post_content = function(post_url, max_error_time = 3) {
+get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   # function input: postUrl
   # post_url <- "https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html"
   if (! length(post_url) == 1) {
@@ -24,10 +24,12 @@ get_post_content = function(post_url, max_error_time = 3) {
   error_time = 1
   while (error_time <= max_error_time && http_error(res)) {
     Sys.sleep(0.5)
-    message(sprintf("Connection error (try %s) [%s]: %s",
-                    error_time ,
-                    status_code(res),
-                    post_url))
+    if (verbose) {
+      message(sprintf("Connection fail (try %s) [%s]: %s",
+                      error_time ,
+                      status_code(res),
+                      post_url))
+    }
     res <- GET(post_url, set_cookies(over18 = 1))
     error_time = error_time + 1
     if (error_time > max_error_time) {
@@ -38,25 +40,26 @@ get_post_content = function(post_url, max_error_time = 3) {
   node = content(res, encoding = "UTF-8")
 
   postData = list()
-  postData$board = node %>%
-    rvest::html_nodes(".article-metaline-right > .article-meta-value") %>%
-    rvest::html_text()
+  # postData$board = node %>%
+  #   rvest::html_nodes(".article-metaline-right > .article-meta-value") %>%
+  #   rvest::html_text()
+  postData$board <- post_url %>% str_match("https?://www.ptt.cc/bbs/([^/]+)")
 
-  metaTemp = node %>%
+  metaTemp <- node %>%
     rvest::html_nodes(".article-metaline > .article-meta-value") %>%
     rvest::html_text()
 
-  postData$author = metaTemp[[1]]
+  postData$author <- metaTemp[1]
   postData$author_ip = node %>%
     html_text() %>%
     str_match_all('(?:From|來自): ([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
     .[[1]] %>% .[,2] %>%
     tail(1)  # select last ip
-  postData$title = metaTemp[[2]]
-  postData$post_time = metaTemp[[3]]
+  postData$title <- metaTemp[2]
+  postData$post_time <- metaTemp[3]
 
-  postData$post_url = post_url
-  postData$post_id = gsub("[/]|\\.html", "",
+  postData$post_url <- post_url
+  postData$post_id <- gsub("[/]|\\.html", "",
                           unlist(strsplit(post_url, postData$board))[[2]])
   postData$post_text = node %>%
     rvest::html_nodes("*#main-content") %>%
@@ -67,7 +70,7 @@ get_post_content = function(post_url, max_error_time = 3) {
     html_text() %>%
     str_replace('(?s)--\\n\\u203b \\u767c\\u4fe1\\u7ad9: \\u6279\\u8e22\\u8e22\\u5be6\\u696d\\u574a.*$', "")
 
-  push_df_data = lapply(node %>%
+  push_df_data <- lapply(node %>%
                           rvest::html_nodes("div.push"),
                         function (x) {
                           push <- html_text(html_nodes(x, "span"))
