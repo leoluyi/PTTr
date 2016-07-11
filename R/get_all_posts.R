@@ -7,29 +7,36 @@
 #' @param ... other parameters passed to get_post_url()
 #'
 #' @return data.table
-#'
-#' @importFrom data.table data.table rbindlist
 #' @export
 #'
 #' @examples
-#' get_all_posts("gissiping")
+#' get_all_posts("gossiping")
 #'
-get_all_posts <- function(board_name, max_post = 1000, ...) {
+get_all_posts <- function(board_name, max_post = 1000, parallel = NULL, ...) {
   # bord_name <- "Gossiping"
-  listpage_urls <- get_url_listpage(bord_name)
-  post_urls <- get_post_url(listpage_urls, max_post, ...)
+  # max_post <- 100
+  listpage_urls <- get_url_listpage(board_name)
+  post_urls <- get_post_url(listpage_urls, max_post)
+  # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
 
-  get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1468205607.A.865.html")
+  ## get articles
   res_list <- lapply(
     post_urls,
     function(x) {
-      post_data <- get_post_content(x, max_post)
-      if (!is.null(post_data))
-        out <- data.table::as.data.table(post_data$post_main)
-      else
-        out <- NULL
-      out
+      tryCatch({
+        post_data <- get_post_content(x, verbose = FALSE)
+        if (!is.null(post_data$post_main))
+          out <- data.table::as.data.table(post_data$post_main)
+        else
+          out <- NULL
+        out
+      }, error = function(e) {
+        message(e, "[url] ",x)
+        return(NULL)
+      }, warning = function(w) {
+        message(w, "[url] ",x)
+      })
     })
-  post_dt <- rbindlist(res_list)
+  post_dt <- data.table::rbindlist(res_list, use.names = TRUE, fill = TRUE)
   post_dt
 }
