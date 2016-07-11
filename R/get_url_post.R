@@ -6,24 +6,44 @@
 #'
 #' Get urls of posts that listed in the list page.
 #'
-#' @param listPageUrl The url of the list page.
+#' @param listpage_urls The url of the list page.
+#' @param max_post Maximun number of the lastest posts. Default 1000.
+#'        If NULL, will get all of listpage_urls. [Caucious!]
+#'
 #' @examples
-#' listpage_urls = get_url_listpage("Gossiping")[1:5]
-#' postUrls = unlist(lapply(listPageUrls,getPostUrls))
-#' postUrls
-#' @import httr rvest stringr
+#' listpage_urls = get_url_listpage("Gossiping")[1:50]
+#' #> [1] "https://www.ptt.cc/bbs/Gossiping/index15002.html"
+#' #> [2] "https://www.ptt.cc/bbs/Gossiping/index15001.html"
+#' #> ...
+#' post_urls = get_post_url(listpage_urls, max_post = 100)
+#' post_urls
 #' @export
-get_url_post = function(listpage_urls) {
+get_post_url = function(listpage_urls, max_post = 1000L, ...) {
   # function input: listpage_urls
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
-  post_urls <- lapply(listpage_urls, FUN = get_url_post_) %>%
-    unlist(use.names = FALSE)
+  if (is.null(max_post)) {
+    post_urls <- lapply(listpage_urls, FUN = get_post_url_) %>%
+      unlist(use.names = FALSE)
+  } else {
+    if (!is.numeric(max_post)) {stop("'max_post' must be integer")}
+    url_front <- stringr::str_match(listpage_urls[[1]], "^(.*)index\\d+\\.html$")[,2]
+    page_num <- stringr::str_match(listpage_urls, "index(\\d+)\\.html$")[,2]
+    urls_sub <- page_num %>%
+      as.integer %>%
+      sort(decreasing = TRUE) %>%
+      head(max_post/20 + 1) %>% # 20 posts per page
+      paste0(url_front, "index", .,  ".html")
+    post_urls <- lapply(urls_sub, FUN = get_post_url_) %>%
+      unlist(use.names = FALSE)
+    post_urls <- post_urls %>% head(max_post)
+  }
   # function output: post_urls
+  post_urls
 }
 
 # single url
-get_url_post_ = function(listpage_url) {
+get_post_url_ = function(listpage_url) {
   # listpage_url = get_url_listpage("Gossiping")[[10]]
 
   res <- GET(listpage_url, set_cookies(over18 = 1))
@@ -32,4 +52,5 @@ get_url_post_ = function(listpage_url) {
     rvest::html_nodes(".title a") %>%
     rvest::html_attr("href") %>%
     sprintf("https://www.ptt.cc%s", .)
+  post_urls
 }

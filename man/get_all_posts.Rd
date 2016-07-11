@@ -4,10 +4,14 @@
 \alias{get_all_posts}
 \title{get_all_posts}
 \usage{
-get_all_posts(board_name, ...)
+get_all_posts(board_name, max_post = 1000, ...)
 }
 \arguments{
-\item{board_name}{}
+\item{board_name}{PTT board name}
+
+\item{max_post}{See get_post_url()}
+
+\item{...}{other parameters passed to get_post_url()}
 }
 \value{
 data.table

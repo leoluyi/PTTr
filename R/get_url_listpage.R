@@ -10,7 +10,6 @@
 #' @examples
 #' listPageUrls = get_url_listpage("Gossiping")[1:5]
 #' listPageUrls
-#' @import httr rvest stringr
 #' @export
 get_url_listpage = function(boardName) {
   # function input: boardName
@@ -25,10 +24,9 @@ get_url_listpage = function(boardName) {
     stringr::str_match("(\\d+)\\.html$") %>% .[1, 2] %>%
     as.integer()
 
-  allListPages = as.character(1:maxPage)
   allListUrls = sprintf("https://www.ptt.cc/bbs/%s/index%s.html",
                         boardName,
-                        as.character(1:maxPage))
+                        as.character(maxPage:1))
   # function output: allListUrls
   allListUrls
 }

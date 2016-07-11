@@ -15,7 +15,10 @@
 get_post_content = function(post_url, max_error_time = 3) {
   # function input: postUrl
   # post_url <- "https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html"
-
+  if (! length(post_url) == 1) {
+    post_url <- post_url[1]
+    warning("only use first url\n[", post_url, "]")
+  }
   res <- GET(post_url, set_cookies(over18 = 1))
 
   error_time = 0
@@ -26,9 +29,13 @@ get_post_content = function(post_url, max_error_time = 3) {
                     status_code(res),
                     post_url))
     res <- GET(post_url, set_cookies(over18 = 1))
+
+    if (error_time == max_error_time) {
+      return(NULL)
+    }
   }
 
-  node = content(res, encoding = "utf8")
+  node = content(res, encoding = "UTF-8")
 
   postData = list()
   postData$board = node %>%
@@ -48,14 +55,6 @@ get_post_content = function(post_url, max_error_time = 3) {
   postData$title = metaTemp[[2]]
   postData$post_time = metaTemp[[3]]
 
-  # ## remove meta data
-  # try (removeNodes(node[cssToXpath(".article-metaline-right > .article-meta-value")])
-  #      , silent = TRUE)
-  # try (removeNodes(node[cssToXpath(".article-metaline > .article-meta-value")])
-  #      , silent = TRUE)
-  # try (removeNodes(node["//span[@class='article-meta-tag']"])
-  #      , silent = TRUE)
-
   postData$post_url = post_url
   postData$post_id = gsub("[/]|\\.html", "",
                           unlist(strsplit(post_url, postData$board))[[2]])
@@ -68,45 +67,28 @@ get_post_content = function(post_url, max_error_time = 3) {
     html_text() %>%
     str_replace('(?s)--\\n\\u203b \\u767c\\u4fe1\\u7ad9: \\u6279\\u8e22\\u8e22\\u5be6\\u696d\\u574a.*$', "")
 
-  x <- node %>%
-    rvest::html_nodes("div.push") %>%
-    .[1]
-
-
-  pushData = lapply(node %>%
-                      rvest::html_nodes("div.push"),
-                    function (x) {
-                      push <- html_text(html_nodes(x, "span"))
-                      push <- dplyr::data_frame(
-                        push_tag = str_trim(push[1]),
-                        push_uid = str_trim(push[2]),
-                        push_text = str_replace(push[3], "^:", ""),
-                        push_ip =  str_extract(
-                          str_trim(push[4]),
-                          "^(?:\\d{2,3}\\.){3}\\d{2,3}"),
-                        push_time = str_extract(
-                          str_trim(push[4]),
-                          "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
-                    }) %>% dplyr::bind_rows()
-
-  # ## remove push
-  # try (removeNodes(node["//div[@id='main-content']/div[@class='push']"])
-  #      , silent = TRUE)
-  # ## remove stamp
-  # try (removeNodes(node["//span[@class='f2']"])
-  #      , silent = TRUE)
-  # try (removeNodes(node["//span[@class='f6']"])
-  #      , silent = TRUE)
-
-
-
+  push_df_data = lapply(node %>%
+                          rvest::html_nodes("div.push"),
+                        function (x) {
+                          push <- html_text(html_nodes(x, "span"))
+                          push <- dplyr::data_frame(
+                            push_tag = str_trim(push[1]),
+                            push_uid = str_trim(push[2]),
+                            push_text = str_replace(push[3], "^:", ""),
+                            push_ip =  str_extract(
+                              str_trim(push[4]),
+                              "^(?:\\d{2,3}\\.){3}\\d{2,3}"),
+                            push_time = str_extract(
+                              str_trim(push[4]),
+                              "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
+                        }) %>% dplyr::bind_rows()
 
   push_df <- cbind(post_id = postData$post_id,
                    post_url = post_url,
-                   pustData)
+                   push_df_data)
 
   # function output:
-  structure(list(post = postData,
+  structure(list(post_main = postData,
                  push = push_df),
             class = "ptt_post")
 
@@ -116,7 +98,7 @@ get_post_content = function(post_url, max_error_time = 3) {
 #' @export
 print.ptt_post <- function(x, ..., max.lines = 10, width = getOption("width")) {
   cat("[", x$post$post_url, "]\n\n", sep = "")
-  cat("$post", "\n", sep = "")
+  cat("$", names(x)[[1]], "\n", sep = "")
   cat("  Board: ", x$post$board, "\n", sep = "")
   cat("  Title: ", x$post$title, "\n", sep = "")
   cat("  Author: ", x$post$author, "\n", sep = "")
@@ -125,14 +107,14 @@ print.ptt_post <- function(x, ..., max.lines = 10, width = getOption("width")) {
   ## print
   # code modified from:
   # https://github.com/hadley/httr/blob/25557c0327ef2a4cae13db017813fbd2ed86d3c0/R/response.r
-  size <- length(x$post$post_text)
+  size <- length(x$post_main$post_text)
   if (size == 0) {
     cat("<EMPTY POST TEXT>\n")
   } else {
     cat("<POST TEXT>\n")
-    breaks <- gregexpr("\n", x$post$post_text, fixed = TRUE)[[1]]
+    breaks <- gregexpr("\n", x$post_main$post_text, fixed = TRUE)[[1]]
     last_line <- breaks[min(length(breaks), max.lines)]
-    lines <- strsplit(substr(x$post$post_text, 1, last_line), "\n")[[1]]
+    lines <- strsplit(substr(x$post_main$post_text, 1, last_line), "\n")[[1]]
 
     too_wide <- nchar(lines) > width
     lines[too_wide] <-
@@ -143,7 +125,7 @@ print.ptt_post <- function(x, ..., max.lines = 10, width = getOption("width")) {
       cat("...\n")
   }
 
-  cat("\n$push", "\n", sep = "")
+  cat("\n$", names(x)[[2]], "\n", sep = "")
   size_push <- nrow(x$push)
   if (size_push == 0) {
     cat("<EMPTY PUSH>\n")
