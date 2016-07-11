@@ -1,23 +1,29 @@
 ####################################################
-# getListPageUrls via boardName
+# getListPageUrls via board_name
 ####################################################
 
 #' get_url_listpage
 #'
 #' Get urls of the list pages, each contains certain posts of the input board.
 #'
-#' @param boardName The name of a board.
+#' @param board_name The name of a board.
 #' @examples
 #' listPageUrls = get_url_listpage("Gossiping")[1:5]
 #' listPageUrls
 #' @export
-get_url_listpage = function(boardName) {
-  # function input: boardName
-  # boardName = "Gossiping"
+get_url_listpage = function(board_name) {
+  # function input: board_name
+  # board_name = "gossiping"
+  # board_name <- "gissiping"
 
-  boardUrl = sprintf("https://www.ptt.cc/bbs/%s/index.html", boardName)
-  res <- GET(boardUrl, set_cookies(over18 = 1))
-  node = content(res, encoding = "utf8")
+  board_url = sprintf("https://www.ptt.cc/bbs/%s/index.html", board_name)
+  res <- GET(board_url, set_cookies(over18 = 1))
+
+  if (http_error(res)) {
+    stop("nonexistence of PTT board name: ", board_name)
+  }
+
+  node <- content(res, encoding = "utf8")
   maxPage = node %>%
     rvest::html_nodes(".wide:nth-child(2)") %>%
     rvest::html_attr("href") %>%
@@ -25,7 +31,7 @@ get_url_listpage = function(boardName) {
     as.integer()
 
   allListUrls = sprintf("https://www.ptt.cc/bbs/%s/index%s.html",
-                        boardName,
+                        board_name,
                         as.character(maxPage:1))
   # function output: allListUrls
   allListUrls
