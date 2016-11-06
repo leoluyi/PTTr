@@ -1,4 +1,4 @@
-#' Get the content of a post from a post url
+#' Extract content of a post from a post url
 #'
 #' @param post_url URL of a post.
 #' @examples
