@@ -12,7 +12,8 @@
 #' @examples
 #' get_all_posts("Gossiping", max_post = 10)
 #'
-get_all_posts <- function(board_name, max_post = 1000, parallel = NULL, ...) {
+get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
+                          parallel = NULL, ...) {
   # bord_name = "Gossiping"
   # max_post = 100
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"

@@ -18,6 +18,7 @@
 get_all_url <- function(board_name, max_post = 1000L, ...) {
   listpage_urls <- get_url_listpage(board_name)
   post_urls <- get_post_url(listpage_urls, max_post)
+  post_urls
 }
 
 get_post_url = function(listpage_urls, max_post = 1000L, ...) {
