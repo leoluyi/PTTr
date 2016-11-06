@@ -19,5 +19,5 @@ Import:
   stringr,
   data.table,
   dplyr,
-  snowfall
+  parallel
 RoxygenNote: 5.0.1
