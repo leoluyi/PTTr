@@ -5,14 +5,18 @@
 \title{Extract list of posts from a board}
 \usage{
 get_all_posts(board_name, max_post = 1000, include.push = FALSE,
-  parallel = NULL, ...)
+  mc.core = NULL, ...)
 }
 \arguments{
-\item{board_name}{PTT board name}
+\item{board_name}{String PTT board name.}
 
-\item{max_post}{See get_post_url()}
+\item{max_post}{See \code{\link{get_urls}}().}
 
-\item{...}{other parameters passed to get_post_url()}
+\item{include.push}{Logical. Whether to include push data.}
+
+\item{mc.core}{Parallel cores.}
+
+\item{...}{other parameters passed to \code{\link{get_urls}}().}
 }
 \value{
 data.table

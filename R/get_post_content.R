@@ -1,6 +1,6 @@
 #' Extract content of a post from a post url
 #'
-#' @param post_url URL of a post.
+#' @param post_url URL string of a post.
 #' @examples
 #' get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")
 #'

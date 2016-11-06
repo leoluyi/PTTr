@@ -2,7 +2,7 @@
 #'
 #' @param board_name String of PTT board name.
 #' @param max_post Maximun number of the lastest posts. Default 1000.
-#'        If NULL, will get all of listpage_urls. [Caucious!]
+#'        If set to \code{-1}, will get all of listpage_urls. [Caucious!]
 #'
 #' @examples
 #' post_urls <- get_all_url("Gossiping", max_post = 100)
@@ -19,7 +19,7 @@ get_post_url = function(listpage_urls, max_post = 1000L, ...) {
   # function input: listpage_urls
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
-  if (is.null(max_post)) {
+  if (max_post == -1) {
     post_urls <- lapply(listpage_urls, FUN = get_post_url_) %>%
       unlist(use.names = FALSE)
   } else {

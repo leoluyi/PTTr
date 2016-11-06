@@ -10,7 +10,7 @@ get_urls(board_name, max_post = 1000L, ...)
 \item{board_name}{String of PTT board name.}
 
 \item{max_post}{Maximun number of the lastest posts. Default 1000.
-If NULL, will get all of listpage_urls. [Caucious!]}
+If set to \code{-1}, will get all of listpage_urls. [Caucious!]}
 }
 \description{
 Extract list of urls from a board

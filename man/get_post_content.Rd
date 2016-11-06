@@ -7,7 +7,7 @@
 get_post_content(post_url, max_error_time = 3, verbose = TRUE)
 }
 \arguments{
-\item{post_url}{URL of a post.}
+\item{post_url}{URL string of a post.}
 }
 \description{
 Extract content of a post from a post url

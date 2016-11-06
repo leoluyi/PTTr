@@ -1,8 +1,10 @@
 #' Extract list of posts from a board
 #'
-#' @param board_name PTT board name
-#' @param max_post See get_post_url()
-#' @param ... other parameters passed to get_post_url()
+#' @param board_name String PTT board name.
+#' @param max_post See \code{\link{get_urls}}().
+#' @param include.push Logical. Whether to include push data.
+#' @param mc.core Parallel cores.
+#' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
 #' @export
@@ -11,7 +13,7 @@
 #' get_all_posts("Gossiping", max_post = 10)
 #'
 get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
-                          parallel = NULL, ...) {
+                          mc.core = NULL, ...) {
   # bord_name = "Gossiping"
   # max_post = 100
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
