@@ -2,9 +2,8 @@
 
 S3method(print,ptt_post)
 export(get_all_posts)
+export(get_all_url)
 export(get_post_content)
-export(get_post_url)
-export(get_url_listpage)
 import(httr)
 import(magrittr)
 import(rvest)

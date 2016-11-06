@@ -20,7 +20,7 @@ data.table
 Get all posts from a given board name
 }
 \examples{
-get_all_posts("gossiping")
+get_all_posts("Gossiping", max_post = 10)
 
 }
 

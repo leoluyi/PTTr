@@ -2,15 +2,6 @@
 # getListPageUrls via board_name
 ####################################################
 
-#' get_url_listpage
-#'
-#' Get urls of the list pages, each contains certain posts of the input board.
-#'
-#' @param board_name The name of a board.
-#' @examples
-#' listPageUrls = get_url_listpage("Gossiping")[1:5]
-#' listPageUrls
-#' @export
 get_url_listpage = function(board_name) {
   # function input: board_name
   # board_name = "gossiping"

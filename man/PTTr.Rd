@@ -4,7 +4,7 @@
 \name{PTTr}
 \alias{PTTr}
 \alias{PTTr-package}
-\title{PTTr: PTT API}
+\title{Access PTT via R API}
 \description{
 Web-Based PTT Crawler Package.
 }
