@@ -2,9 +2,10 @@
 % Please edit documentation in R/get_all_posts.R
 \name{get_all_posts}
 \alias{get_all_posts}
-\title{get_all_posts}
+\title{Extract list of posts from a board}
 \usage{
-get_all_posts(board_name, max_post = 1000, parallel = NULL, ...)
+get_all_posts(board_name, max_post = 1000, include.push = FALSE,
+  parallel = NULL, ...)
 }
 \arguments{
 \item{board_name}{PTT board name}
@@ -17,7 +18,7 @@ get_all_posts(board_name, max_post = 1000, parallel = NULL, ...)
 data.table
 }
 \description{
-Get all posts from a given board name
+Extract list of posts from a board
 }
 \examples{
 get_all_posts("Gossiping", max_post = 10)

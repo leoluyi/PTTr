@@ -1,10 +1,4 @@
-####################################################
-# getPostUrls via listPageUrl
-####################################################
-
-#' get_all_url
-#'
-#' Get urls of posts that listed in the list page.
+#' Extract list of urls from a board
 #'
 #' @param board_name String of PTT board name.
 #' @param max_post Maximun number of the lastest posts. Default 1000.
@@ -15,7 +9,7 @@
 #' post_urls
 #'
 #' @export
-get_all_url <- function(board_name, max_post = 1000L, ...) {
+get_urls <- function(board_name, max_post = 1000L, ...) {
   listpage_urls <- get_url_listpage(board_name)
   post_urls <- get_post_url(listpage_urls, max_post)
   post_urls

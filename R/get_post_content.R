@@ -1,10 +1,4 @@
-####################################################
-# getPostData via postUrl
-####################################################
-
-#' getPostData
-#'
-#' Get the content of the post.
+#' Get the content of a post from a post url
 #'
 #' @param post_url URL of a post.
 #' @examples

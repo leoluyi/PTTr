@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_post_content.R
 \name{get_post_content}
 \alias{get_post_content}
-\title{getPostData}
+\title{Get the content of a post from a post url}
 \usage{
 get_post_content(post_url, max_error_time = 3, verbose = TRUE)
 }
@@ -10,7 +10,7 @@ get_post_content(post_url, max_error_time = 3, verbose = TRUE)
 \item{post_url}{URL of a post.}
 }
 \description{
-Get the content of the post.
+Get the content of a post from a post url
 }
 \examples{
 get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")

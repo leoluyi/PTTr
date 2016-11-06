@@ -1,6 +1,4 @@
-#' get_all_posts
-#'
-#' Get all posts from a given board name
+#' Extract list of posts from a board
 #'
 #' @param board_name PTT board name
 #' @param max_post See get_post_url()
@@ -18,7 +16,7 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
   # max_post = 100
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
 
-  post_urls <- get_all_url(board_name, max_post)
+  post_urls <- get_urls(board_name, max_post)
 
   ## get articles
   res_list <- lapply(
