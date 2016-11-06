@@ -18,8 +18,11 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
   # max_post = 100
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
 
+  message("Getting urls...", appendLF = FALSE)
   post_urls <- get_urls(board_name, max_post)
+  message(sprintf("Got %s urls", length(post_urls)))
 
+  message("Getting posts...")
   ## get articles
   res_list <- lapply(
     post_urls,
