@@ -14,7 +14,7 @@ get_all_posts(board_name, max_post = 1000, include_push = FALSE,
 
 \item{include_push}{Logical. Whether to include push data.}
 
-\item{mc.cores}{Number of parallel cores to use.}
+\item{mc.cores}{Number of parallel cores to use. Use \code{-1} to auto detect.}
 
 \item{...}{other parameters passed to \code{\link{get_urls}}().}
 }

@@ -16,7 +16,9 @@ get_titles(board_name, max_post = 1000L, mc.cores = -1, ...)
 \item{board_name}{String of PTT board name.}
 
 \item{max_post}{Maximun number of the lastest posts. Default 1000.
-If set to \code{-1}, will get all of listpage_urls. [Caucious!]}
+If set to \code{-1}, will get all of listpage_urls. [Caucious!].}
+
+\item{mc.cores}{Number of parallel cores to use. Use \code{-1} to auto detect.}
 }
 \description{
 Extract list of urls, titles, nrec from a board
@@ -28,8 +30,9 @@ Extract list of urls, titles, nrec from a board
 \item \code{get_titles}: Get post titles of posts in a board.
 }}
 \examples{
-post_urls <- get_urls("Gossiping", max_post = 100)
-post_urls
+get_posts_list("Gossiping", max_post = 100)
+get_urls("Gossiping", max_post = 100)
+get_titles("Gossiping", max_post = 100)
 
 }
 
