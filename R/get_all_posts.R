@@ -38,7 +38,7 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
 
   cl <- parallel::makeCluster(mc.cores)
   clusterExport(cl, c("post_urls", "get_post_content"))
-  res <- clusterEvalQ(cl, library(data.table))
+  clusterEvalQ(cl, library(data.table))
 
   res_list <- parallel::parLapply(
     cl,
