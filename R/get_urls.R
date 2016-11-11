@@ -21,7 +21,7 @@ get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
   }
 
   listpage_urls <- get_url_listpage(board_name)
-  post_urls <- get_post_url(listpage_urls, max_post, mc.cores)
+  post_urls <- get_post_url(listpage_urls, max_post, mc.cores)[["post_urls"]]
   post_urls
 }
 
@@ -31,34 +31,49 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
 
   if (!is.numeric(max_post)) {
     stop("'max_post' must be integer")
+  } else {
+    max_post <- as.integer(max_post)
+  }
+
+  if (max_post < 0) {
+    urls <- listpage_urls
+  } else {
+    url_front <- stringr::str_match(listpage_urls[[1]], "^(.*)index\\d+\\.html$")[,2]
+    page_num <- stringr::str_match(listpage_urls, "index(\\d+)\\.html$")[,2]
+    urls <- page_num %>%
+      as.integer %>%
+      sort(decreasing = TRUE) %>%
+      head(max_post/20 + 1) %>% # 20 posts per page
+      paste0(url_front, "index", .,  ".html")
   }
 
   ## Setting arallel cores
   cl <- parallel::makeCluster(mc.cores)
   on.exit(parallel::stopCluster(cl))
-  parallel::clusterExport(cl, c("post_urls"), envir = environment())
+  parallel::clusterExport(cl, c("urls"), envir = environment())
   parallel::clusterExport(cl, "get_post_url_", envir = parent.env(environment()))
   # parallel::clusterEvalQ(cl, library(data.table))
 
-  if (max_post == -1) {
-    post_urls <- parallel::parLapply(cl, listpage_urls, get_post_url_) %>%
-      lapply(function(x) x[["post_urls"]]) %>%
-      unlist(use.names = FALSE)
-  } else {
-    url_front <- stringr::str_match(listpage_urls[[1]], "^(.*)index\\d+\\.html$")[,2]
-    page_num <- stringr::str_match(listpage_urls, "index(\\d+)\\.html$")[,2]
-    urls_sub <- page_num %>%
-      as.integer %>%
-      sort(decreasing = TRUE) %>%
-      head(max_post/20 + 1) %>% # 20 posts per page
-      paste0(url_front, "index", .,  ".html")
-    post_urls <- parallel::parLapply(cl, urls_sub, get_post_url_) %>%
-      lapply(function(x) x[["post_urls"]]) %>%
-      unlist(use.names = FALSE)
+  res <- parallel::parLapply(cl, urls, get_post_url_)
+
+  post_urls <- res %>%
+    lapply(function(x) x[["post_urls"]]) %>%
+    unlist(use.names = FALSE)
+  nrec <- res %>%
+    lapply(function(x) x[["nrec"]]) %>%
+    unlist(use.names = FALSE)
+  title <- res %>%
+    lapply(function(x) x[["title"]]) %>%
+    unlist(use.names = FALSE)
+
+  if (max_post > 0) {
     post_urls <- post_urls %>% head(max_post)
+    nrec <- nrec %>% head(max_post)
+    title <- title %>% head(max_post)
   }
+
   # function output: post_urls
-  post_urls
+  list(post_urls = post_urls, nrec = nrec, title = title)
 }
 
 # single url
@@ -71,13 +86,16 @@ get_post_url_ = function(listpage_url) {
     rvest::html_nodes(".title a") %>%
     rvest::html_attr("href") %>%
     sprintf("https://www.ptt.cc%s", .)
-  n_like <- node %>%
-    rvest::html_nodes(".hl") %>%
+  nrec <- node %>%
+    rvest::html_nodes(".nrec") %>%
+    rvest::html_text()
+  title <- node %>%
+    rvest::html_nodes(".title a") %>%
     rvest::html_text()
 
-  if (identical(length(post_urls), length(n_like))) {
-    warning(sprintf("length of post_urls and n_like are not the same in %s", listpage_url))
+  if (identical(length(post_urls), length(nrec))) {
+    warning(sprintf("length of post_urls and nrec are not the same in %s", listpage_url))
   }
 
-  list(post_urls = post_urls, n_like = n_like)
+  list(post_urls = post_urls, nrec = nrec, title = title)
 }
