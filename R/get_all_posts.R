@@ -38,6 +38,7 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
                   length(post_urls), mc.cores))
 
   cl <- parallel::makeCluster(mc.cores)
+  on.exit(stopCluster(cl))
   clusterExport(cl, c("post_urls"), envir = environment())
   clusterExport(cl, "get_post_content", envir = as.environment("package:PTTr"))
   clusterEvalQ(cl, library(data.table))
@@ -60,7 +61,6 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
         message(w, "[url] ",x)
       })
     })
-  stopCluster(cl)
 
   post_dt <- data.table::rbindlist(res_list, use.names = TRUE, fill = TRUE)
   post_dt
