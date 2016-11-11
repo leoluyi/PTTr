@@ -7,6 +7,7 @@
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
+#' @import parallel
 #' @export
 #'
 #' @examples
@@ -37,7 +38,8 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
                   length(post_urls), mc.cores))
 
   cl <- parallel::makeCluster(mc.cores)
-  clusterExport(cl, c("post_urls", "get_post_content"))
+  clusterExport(cl, c("post_urls"), envir = environment())
+  clusterExport(cl, "get_post_content", envir = as.environment("package:PTTr"))
   clusterEvalQ(cl, library(data.table))
 
   res_list <- parallel::parLapply(

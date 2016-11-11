@@ -16,7 +16,7 @@ If set to \code{-1}, will get all of listpage_urls. [Caucious!]}
 Extract list of urls from a board
 }
 \examples{
-post_urls <- get_all_url("Gossiping", max_post = 100)
+post_urls <- get_urls("Gossiping", max_post = 100)
 post_urls
 
 }
