@@ -29,12 +29,22 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
   # function input: listpage_urls
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
+  if (!is.numeric(max_post)) {
+    stop("'max_post' must be integer")
+  }
+
+  ## Setting arallel cores
+  cl <- parallel::makeCluster(mc.cores)
+  on.exit(parallel::stopCluster(cl))
+  parallel::clusterExport(cl, c("post_urls"), envir = environment())
+  parallel::clusterExport(cl, "get_post_url_", envir = parent.env(environment()))
+  # parallel::clusterEvalQ(cl, library(data.table))
+
   if (max_post == -1) {
-    post_urls <- parallel::mclapply(listpage_urls, FUN = get_post_url_,
-                                    mc.cores =  mc.cores) %>%
+    post_urls <- parallel::parLapply(cl, listpage_urls, get_post_url_) %>%
+      lapply(function(x) x[["post_urls"]]) %>%
       unlist(use.names = FALSE)
   } else {
-    if (!is.numeric(max_post)) {stop("'max_post' must be integer")}
     url_front <- stringr::str_match(listpage_urls[[1]], "^(.*)index\\d+\\.html$")[,2]
     page_num <- stringr::str_match(listpage_urls, "index(\\d+)\\.html$")[,2]
     urls_sub <- page_num %>%
@@ -42,7 +52,8 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
       sort(decreasing = TRUE) %>%
       head(max_post/20 + 1) %>% # 20 posts per page
       paste0(url_front, "index", .,  ".html")
-    post_urls <- lapply(urls_sub, FUN = get_post_url_) %>%
+    post_urls <- parallel::parLapply(cl, urls_sub, get_post_url_) %>%
+      lapply(function(x) x[["post_urls"]]) %>%
       unlist(use.names = FALSE)
     post_urls <- post_urls %>% head(max_post)
   }
@@ -52,13 +63,21 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
 
 # single url
 get_post_url_ = function(listpage_url) {
-  # listpage_url = get_url_listpage("Gossiping")[[10]]
+  # listpage_url = PTTr:::get_url_listpage("Gossiping")[[10]]
 
-  res <- GET(listpage_url, set_cookies(over18 = 1))
-  node = content(res, encoding = "utf8")
+  res <- httr::GET(listpage_url, set_cookies(over18 = 1))
+  node <- httr::content(res, encoding = "utf8")
   post_urls <- node %>%
     rvest::html_nodes(".title a") %>%
     rvest::html_attr("href") %>%
     sprintf("https://www.ptt.cc%s", .)
-  post_urls
+  n_like <- node %>%
+    rvest::html_nodes(".hl") %>%
+    rvest::html_text()
+
+  if (identical(length(post_urls), length(n_like))) {
+    warning(sprintf("length of post_urls and n_like are not the same in %s", listpage_url))
+  }
+
+  list(post_urls = post_urls, n_like = n_like)
 }

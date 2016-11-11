@@ -2,7 +2,7 @@
 #'
 #' @param board_name String PTT board name.
 #' @param max_post See \code{\link{get_urls}}().
-#' @param include.push Logical. Whether to include push data.
+#' @param include_push Logical. Whether to include push data.
 #' @param mc.cores Number of parallel cores to use.
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
@@ -13,7 +13,7 @@
 #' @examples
 #' get_all_posts("Gossiping", max_post = 10)
 #'
-get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
+get_all_posts <- function(board_name, max_post = 1000, include_push = FALSE,
                           mc.cores = -1, ...) {
   # board_name = "Gossiping"
   # max_post = 100
