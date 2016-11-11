@@ -4,7 +4,7 @@
 \alias{get_all_posts}
 \title{Extract list of posts from a board}
 \usage{
-get_all_posts(board_name, max_post = 1000, include.push = FALSE,
+get_all_posts(board_name, max_post = 1000, include_push = FALSE,
   mc.cores = -1, ...)
 }
 \arguments{
@@ -12,7 +12,7 @@ get_all_posts(board_name, max_post = 1000, include.push = FALSE,
 
 \item{max_post}{See \code{\link{get_urls}}().}
 
-\item{include.push}{Logical. Whether to include push data.}
+\item{include_push}{Logical. Whether to include push data.}
 
 \item{mc.cores}{Number of parallel cores to use.}
 

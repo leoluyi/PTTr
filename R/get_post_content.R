@@ -44,18 +44,18 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
     rvest::html_nodes(".article-metaline > .article-meta-value") %>%
     rvest::html_text()
 
-  postData$author <- metaTemp[1]
+  postData$author <- metaTemp[1] %>% str_trim()
   postData$author_ip = node %>%
     html_text() %>%
-    str_match_all('(?:From|來自|編輯):\\s(?:\\w+\\s)?[(]([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
+    str_match_all('(?:From|來自|編輯):\\s(?:\\w+\\s)?[(]?([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
     .[[1]] %>% .[,2] %>%
     tail(1)  # select last IP in case of editing
 
-  postData$title <- metaTemp[2]
-  postData$post_time <- metaTemp[3]
+  postData$title <- metaTemp[2] %>% str_trim()
+  postData$post_time <- metaTemp[3] %>% str_trim()
 
   postData$post_url <- post_url
-  postData$post_id <- str_match(post_url, "([^/]+)\\.html")[,2]
+  postData$post_id <- str_match(post_url, "([^/]+)\\.html")[,2] %>% str_trim()
   postData$post_text <- node %>%
     rvest::html_nodes("*#main-content") %>%
     as.character() %>%
@@ -63,7 +63,8 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
     str_replace_all('(?s).*\\<span class="article-meta-value"\\>.*\\d{2}:\\d{2}:\\d{2}[ ]\\d{4}\\<\\/span\\>', "") %>%
     xml2::read_html() %>%
     html_text() %>%
-    str_replace('(?s)--\\n\\u203b \\u767c\\u4fe1\\u7ad9: \\u6279\\u8e22\\u8e22\\u5be6\\u696d\\u574a.*$', "")
+    str_replace('(?s)--\\n\\u203b \\u767c\\u4fe1\\u7ad9: \\u6279\\u8e22\\u8e22\\u5be6\\u696d\\u574a.*$', "") %>%
+    str_trim()
 
   ## replace NULL with NA for making data.frame
   null_to_na <- function(x) {

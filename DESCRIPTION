@@ -10,7 +10,7 @@ Author: as.person(c(
 Description: Retrive posts from PTT Bulletin Board System,
     the largest terminal-based bulletin board system (BBS) based in Taiwan.
 License: FreeBSD
-Depends: R (>= 3.3.0), magrittr
+Depends: R (>= 3.3.0)
 Import:
   magrittr,
   httr,
