@@ -25,9 +25,16 @@ get_posts_list <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
   message("Getting urls...", appendLF = FALSE)
   listpage_urls <- get_url_listpage(board_name)
   out <- get_post_url(listpage_urls, max_post, mc.cores)
-  message(sprintf("(Got %s)", length(post_urls[[1]])))
+  message(sprintf("(Got %s)", length(out[[1]])))
 
-  setDT(out)[]
+  tryCatch(
+    setDT(out),
+    error = function(e) {
+      sapply(out, length, USE.NAMES = TRUE) %>% print
+      stop(e)
+    }
+  )
+  out
 }
 
 #' @export
@@ -99,10 +106,11 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
 
 # single url
 get_post_url_ = function(listpage_url) {
-  # listpage_url = PTTr:::get_url_listpage("Gossiping")[[10]]
+  # listpage_url = "https://www.ptt.cc/bbs/Gossiping/index18285.html"
 
-  res <- httr::GET(listpage_url, set_cookies(over18 = 1))
+  res <- httr::GET(listpage_url, httr::set_cookies(over18 = 1))
   node <- httr::content(res, encoding = "utf8")
+  node
   post_urls <- node %>%
     rvest::html_nodes(".title a") %>%
     rvest::html_attr("href") %>%
@@ -112,10 +120,15 @@ get_post_url_ = function(listpage_url) {
     rvest::html_text()
   title <- node %>%
     rvest::html_nodes(".title a") %>%
-    rvest::html_text()
+    rvest::html_text() %>%
+    stringr::str_trim()
   author <- node %>%
     rvest::html_nodes(".author") %>%
     rvest::html_text()
+
+  keep <- which(author != "-")
+  author <- author[keep]
+  nrec <- nrec[keep]
 
   if (identical(length(post_urls), length(nrec))) {
     warning(sprintf("length of post_urls and nrec are not the same in %s", listpage_url))
