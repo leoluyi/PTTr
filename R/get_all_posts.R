@@ -3,7 +3,7 @@
 #' @param board_name String PTT board name.
 #' @param max_post See \code{\link{get_urls}}().
 #' @param include.push Logical. Whether to include push data.
-#' @param mc.core Parallel cores.
+#' @param mc.cores Number of parallel cores to use.
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
@@ -13,18 +13,35 @@
 #' get_all_posts("Gossiping", max_post = 10)
 #'
 get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
-                          mc.core = NULL, ...) {
-  # bord_name = "Gossiping"
+                          mc.cores = -1, ...) {
+  # board_name = "Gossiping"
   # max_post = 100
+  # mc.cores = -1
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
+
+  ## Setting # of parallel cores
+  if (mc.cores == -1L) {
+    mc.cores <- parallel::detectCores()-1
+  } else if (!is.numeric(mc.cores) || mc.cores < 1) {
+    mc.cores <- 1L
+  } else {
+    mc.cores <- as.integer(mc.cores)
+  }
 
   message("Getting urls...", appendLF = FALSE)
   post_urls <- get_urls(board_name, max_post)
   message(sprintf("Got %s urls", length(post_urls)))
 
-  message("Getting posts...")
   ## get articles
-  res_list <- lapply(
+  message(sprintf("Getting %s posts with %s threads...",
+                  length(post_urls), mc.cores))
+
+  cl <- parallel::makeCluster(mc.cores)
+  clusterExport(cl, c("post_urls", "get_post_content"))
+  res <- clusterEvalQ(cl, library(data.table))
+
+  res_list <- parallel::parLapply(
+    cl,
     post_urls,
     function(x) {
       tryCatch({
@@ -41,6 +58,8 @@ get_all_posts <- function(board_name, max_post = 1000, include.push = FALSE,
         message(w, "[url] ",x)
       })
     })
+  stopCluster(cl)
+
   post_dt <- data.table::rbindlist(res_list, use.names = TRUE, fill = TRUE)
   post_dt
 }

@@ -4,7 +4,7 @@
 \alias{get_urls}
 \title{Extract list of urls from a board}
 \usage{
-get_urls(board_name, max_post = 1000L, ...)
+get_urls(board_name, max_post = 1000L, mc.cores = -1, ...)
 }
 \arguments{
 \item{board_name}{String of PTT board name.}

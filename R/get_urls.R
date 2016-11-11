@@ -9,18 +9,29 @@
 #' post_urls
 #'
 #' @export
-get_urls <- function(board_name, max_post = 1000L, ...) {
+get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
+
+  ## Setting # of parallel cores
+  if (mc.cores == -1L) {
+    mc.cores <- parallel::detectCores()-1
+  } else if (!is.numeric(mc.cores) || mc.cores < 1) {
+    mc.cores <- 1L
+  } else {
+    mc.cores <- as.integer(mc.cores)
+  }
+
   listpage_urls <- get_url_listpage(board_name)
-  post_urls <- get_post_url(listpage_urls, max_post)
+  post_urls <- get_post_url(listpage_urls, max_post, mc.cores)
   post_urls
 }
 
-get_post_url = function(listpage_urls, max_post = 1000L, ...) {
+get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
   # function input: listpage_urls
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
   if (max_post == -1) {
-    post_urls <- lapply(listpage_urls, FUN = get_post_url_) %>%
+    post_urls <- parallel::mclapply(listpage_urls, FUN = get_post_url_,
+                                    mc.cores =  mc.cores) %>%
       unlist(use.names = FALSE)
   } else {
     if (!is.numeric(max_post)) {stop("'max_post' must be integer")}

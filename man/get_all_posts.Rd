@@ -5,7 +5,7 @@
 \title{Extract list of posts from a board}
 \usage{
 get_all_posts(board_name, max_post = 1000, include.push = FALSE,
-  mc.core = NULL, ...)
+  mc.cores = -1, ...)
 }
 \arguments{
 \item{board_name}{String PTT board name.}
@@ -14,7 +14,7 @@ get_all_posts(board_name, max_post = 1000, include.push = FALSE,
 
 \item{include.push}{Logical. Whether to include push data.}
 
-\item{mc.core}{Parallel cores.}
+\item{mc.cores}{Number of parallel cores to use.}
 
 \item{...}{other parameters passed to \code{\link{get_urls}}().}
 }
