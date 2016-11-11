@@ -3,6 +3,8 @@
 S3method(print,ptt_post)
 export(get_all_posts)
 export(get_post_content)
+export(get_posts_list)
+export(get_titles)
 export(get_urls)
 import(httr)
 import(magrittr)

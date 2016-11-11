@@ -29,9 +29,7 @@ get_all_posts <- function(board_name, max_post = 1000, include_push = FALSE,
     mc.cores <- as.integer(mc.cores)
   }
 
-  message("Getting urls...", appendLF = FALSE)
   post_urls <- get_urls(board_name, max_post)
-  message(sprintf("Got %s urls", length(post_urls)))
 
   ## get articles
   message(sprintf("Getting %s posts with %s threads...",

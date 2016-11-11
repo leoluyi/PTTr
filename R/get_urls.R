@@ -1,4 +1,4 @@
-#' Extract list of urls from a board
+#' Extract list of urls, titles, nrec from a board
 #'
 #' @param board_name String of PTT board name.
 #' @param max_post Maximun number of the lastest posts. Default 1000.
@@ -9,7 +9,7 @@
 #' post_urls
 #'
 #' @export
-get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
+get_posts_list <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
 
   ## Setting # of parallel cores
   if (mc.cores == -1L) {
@@ -20,9 +20,24 @@ get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
     mc.cores <- as.integer(mc.cores)
   }
 
+  message("Getting urls...", appendLF = FALSE)
   listpage_urls <- get_url_listpage(board_name)
-  post_urls <- get_post_url(listpage_urls, max_post, mc.cores)[["post_urls"]]
-  post_urls
+  out <- get_post_url(listpage_urls, max_post, mc.cores)
+  message(sprintf("(Got %s)", length(post_urls[[1]])))
+
+  setDT(out)[]
+}
+
+#' @export
+#' @describeIn get_posts_list Get urls of posts in a board.
+get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
+  get_posts_list(board_name, max_post, mc.cores)[["post_urls"]]
+}
+
+#' @export
+#' @describeIn get_posts_list Get post titles of posts in a board.
+get_titles <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
+  get_posts_list(board_name, max_post, mc.cores)[["title"]]
 }
 
 get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
@@ -65,15 +80,19 @@ get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
   title <- res %>%
     lapply(function(x) x[["title"]]) %>%
     unlist(use.names = FALSE)
+  author <- res %>%
+    lapply(function(x) x[["author"]]) %>%
+    unlist(use.names = FALSE)
 
   if (max_post > 0) {
     post_urls <- post_urls %>% head(max_post)
     nrec <- nrec %>% head(max_post)
     title <- title %>% head(max_post)
+    author <- author %>% head(max_post)
   }
 
   # function output: post_urls
-  list(post_urls = post_urls, nrec = nrec, title = title)
+  list(post_urls = post_urls, nrec = nrec, title = title, author = author)
 }
 
 # single url
@@ -92,10 +111,13 @@ get_post_url_ = function(listpage_url) {
   title <- node %>%
     rvest::html_nodes(".title a") %>%
     rvest::html_text()
+  author <- node %>%
+    rvest::html_nodes(".author") %>%
+    rvest::html_text()
 
   if (identical(length(post_urls), length(nrec))) {
     warning(sprintf("length of post_urls and nrec are not the same in %s", listpage_url))
   }
 
-  list(post_urls = post_urls, nrec = nrec, title = title)
+  list(post_urls = post_urls, nrec = nrec, title = title, author = author)
 }
