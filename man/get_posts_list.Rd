@@ -2,8 +2,8 @@
 % Please edit documentation in R/get_posts_list.R
 \name{get_posts_list}
 \alias{get_posts_list}
-\alias{get_urls}
 \alias{get_titles}
+\alias{get_urls}
 \title{Extract list of urls, titles, nrec from a board}
 \usage{
 get_posts_list(board_name, max_post = 1000L, mc.cores = -1, ...)
@@ -29,10 +29,10 @@ Extract list of urls, titles, nrec from a board
 
 \item \code{get_titles}: Get post titles of posts in a board.
 }}
-
 \examples{
 get_posts_list("Gossiping", max_post = 100)
 get_urls("Gossiping", max_post = 100)
 get_titles("Gossiping", max_post = 100)
 
 }
+

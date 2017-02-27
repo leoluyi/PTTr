@@ -4,18 +4,21 @@ Title: Web-Based PTT Crawler Package
 Version: 0.1.0
 Date: 2016-07-01
 Author: as.person(c(
-  "Chia-Chi Chang <c3h3.tw@gmail.com> [aut]",
-  "Chih-Cheng Liang<chihchengliang@gmail.com> [aut, cre]"
-  "Yi Lu <leo0650@gmail.com> [aut, cre]"))
+    "Chia-Chi Chang <c3h3.tw@gmail.com> [aut]",
+    "Chih-Cheng Liang<chihchengliang@gmail.com> [aut, cre]"
+    "Yi Lu <leo0650@gmail.com> [aut, cre]"))
 Description: Retrive posts from PTT Bulletin Board System,
     the largest terminal-based bulletin board system (BBS) based in Taiwan.
 License: FreeBSD
-Depends: R (>= 3.3.0), magrittr, data.table
-Import:
-  httr,
-  rvest,
-  xml2,
-  stringr,
-  dplyr,
-  parallel
-RoxygenNote: 6.0.1
+Depends:
+    R (>= 3.3.0),
+    magrittr,
+    data.table
+Import: httr,
+    rvest,
+    xml2,
+    stringr,
+    dplyr,
+    parallel,
+    pbapply
+RoxygenNote: 5.0.1
