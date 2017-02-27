@@ -7,7 +7,7 @@
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
-#' @import parallel
+#' @import parallel pbapply
 #' @export
 #'
 #' @examples
@@ -41,8 +41,8 @@ get_all_posts <- function(board_name, max_post = 1000, include_push = FALSE,
   clusterExport(cl, "get_post_content", envir = as.environment("package:PTTr"))
   clusterEvalQ(cl, library(data.table))
 
-  res_list <- parallel::parLapply(
-    cl,
+  res_list <- pbapply::pblapply(
+    cl=cl,
     post_urls,
     function(x) {
       tryCatch({
