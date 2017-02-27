@@ -17,7 +17,7 @@ get_all_posts <- function(board_name, max_post = 1000, include_push = FALSE,
                           mc.cores = -1, ...) {
   # board_name = "Gossiping"
   # max_post = 100
-  # mc.cores = -1
+  # mc.cores = 1
   # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
 
   ## Setting # of parallel cores
@@ -47,14 +47,15 @@ get_all_posts <- function(board_name, max_post = 1000, include_push = FALSE,
     function(x) {
       tryCatch({
         post_data <- get_post_content(x, verbose = FALSE)
-        if (!is.null(post_data$post_main))
+        if (!is.null(post_data$post_main)) {
           out <- data.table::as.data.table(post_data$post_main)
-        else
+          out$push_text <- post_data$push$push_text %>% paste(collapse=" ")
+        } else {
           out <- NULL
+        }
         out
       }, error = function(e) {
         message(e, "[url] ",x)
-        return(NULL)
       }, warning = function(w) {
         message(w, "[url] ",x)
       })

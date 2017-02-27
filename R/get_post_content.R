@@ -4,6 +4,7 @@
 #' @examples
 #' get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")
 #'
+#' @import httr rvest data.table stringr
 #' @export
 get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   # function input: postUrl
@@ -32,11 +33,11 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
 
   node <- content(res, encoding = "UTF-8")
 
-  postData <- list()
-  # postData$board = node %>%
+  post_data <- list()
+  # post_data$board = node %>%
   #   rvest::html_nodes(".article-metaline-right > .article-meta-value") %>%
   #   rvest::html_text()
-  postData$board <- post_url %>%
+  post_data$board <- post_url %>%
     str_match("https?://www.ptt.cc/bbs/([^/]+)") %>%
     .[,2]
 
@@ -44,19 +45,19 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
     rvest::html_nodes(".article-metaline > .article-meta-value") %>%
     rvest::html_text()
 
-  postData$author <- metaTemp[1] %>% str_trim()
-  postData$author_ip = node %>%
+  post_data$author <- metaTemp[1] %>% str_trim()
+  post_data$author_ip = node %>%
     html_text() %>%
     str_match_all('(?:From|來自|編輯):\\s(?:\\w+\\s)?[(]?([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') %>%
     .[[1]] %>% .[,2] %>%
     tail(1)  # select last IP in case of editing
 
-  postData$title <- metaTemp[2] %>% str_trim()
-  postData$post_time <- metaTemp[3] %>% str_trim()
+  post_data$title <- metaTemp[2] %>% str_trim()
+  post_data$post_time <- metaTemp[3] %>% str_trim()
 
-  postData$post_url <- post_url
-  postData$post_id <- str_match(post_url, "([^/]+)\\.html")[,2] %>% str_trim()
-  postData$post_text <- node %>%
+  post_data$post_url <- post_url
+  post_data$post_id <- str_match(post_url, "([^/]+)\\.html")[,2] %>% str_trim()
+  post_data$post_text <- node %>%
     rvest::html_nodes("*#main-content") %>%
     as.character() %>%
     str_replace_all('(?s)\\<div class="push"\\>.*\\<\\/div\\>', "") %>% # clear push
@@ -72,7 +73,8 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
     x[sapply(x, function(x) !as.logical(length(x)))] <- NA_character_
     return(x)
   }
-  postData <- null_to_na(postData)
+  post_data <- null_to_na(post_data)
+  post_data %>% setDT
 
   ## push data
   push_df <- dplyr::data_frame(push_tag = character(),
@@ -88,7 +90,7 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
                         push <- dplyr::data_frame(
                           push_tag = str_trim(push_text[1]),
                           push_uid = str_trim(push_text[2]),
-                          push_text = str_replace(push_text[3], "^:", ""),
+                          push_text = str_replace(push_text[3], "^:", "") %>% str_trim(),
                           push_ip =  str_extract(
                             str_trim(push_text[4]),
                             "^(?:\\d{2,3}\\.){3}\\d{2,3}"),
@@ -97,12 +99,12 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
                             "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
                       }) %>% dplyr::bind_rows()
     push_df <- push_df %>% dplyr::bind_rows(push_rows)
-    push_df$post_id <- postData$post_id
+    push_df$post_id <- post_data$post_id
     push_df$post_url <- post_url
   }
 
   # function output:
-  structure(list(post_main = postData,
+  structure(list(post_main = post_data,
                  push = push_df),
             class = "ptt_post")
 

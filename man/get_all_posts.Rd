@@ -28,4 +28,3 @@ Extract list of posts from a board
 get_all_posts("Gossiping", max_post = 10)
 
 }
-
