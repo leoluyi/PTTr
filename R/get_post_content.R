@@ -3,8 +3,6 @@
 #' @param post_url URL string of a post.
 #' @examples
 #' get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")
-#' # 待新增: 推噓文數 (從文章頁的 xml 下手)、datetime parsing
-#' 
 #'
 #' @import httr rvest data.table stringr
 #' @export

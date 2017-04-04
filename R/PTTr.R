@@ -1,6 +1,6 @@
 #' Access PTT via R API
 #'
-#' Web-Based PTT Crawler Package.
+#' A Web-Based PTT Crawler.
 #'
 #' @name PTTr
 #' @docType package
