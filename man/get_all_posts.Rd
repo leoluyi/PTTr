@@ -4,19 +4,19 @@
 \alias{get_all_posts}
 \title{Extract list of posts from a board}
 \usage{
-get_all_posts(board_name, max_post = 1000, include_push = FALSE,
-  mc.cores = -1, ...)
+get_all_posts(board_name, max_post = 1000, list_push = FALSE,
+  parallel = TRUE, mc.cores = NULL, ...)
 }
 \arguments{
 \item{board_name}{String PTT board name.}
 
 \item{max_post}{See \code{\link{get_urls}}().}
 
-\item{include_push}{Logical. Whether to include push data.}
-
 \item{mc.cores}{Number of parallel cores to use. Use \code{-1} to auto detect.}
 
 \item{...}{other parameters passed to \code{\link{get_urls}}().}
+
+\item{include_push}{Logical. Whether to include push data.}
 }
 \value{
 data.table

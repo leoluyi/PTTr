@@ -26,7 +26,7 @@ dt <- get_all_posts("Gossiping", max_post = 10)
 
 ## To-do
 
-- 推噓文數 (從文章頁的 xml 下手)
-- datetime parsing
+- [ ] 推噓文數 (從文章頁的 xml 下手)
+- [ ] datetime parsing
 
 

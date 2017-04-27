@@ -42,12 +42,12 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
   cl <- parallel::makeCluster(mc.cores)
   on.exit(stopCluster(cl))
   clusterExport(cl, c("post_urls"), envir = environment())
-  clusterExport(cl, "get_post_content", envir = as.environment("package:PTTr"))
+  clusterExport(cl, list("get_post_content"), envir = as.environment("package:PTTr"))
   invisible(clusterEvalQ(cl, library(data.table)))
 
-  try_get_post_content <- function(x) {
-    tryCatch({
-      post_data <- get_post_content(x, verbose = FALSE)
+  try_get_post_content <- function(post_url, max_error_time = 3) {
+    out <- tryCatch({
+      post_data <- get_post_content(post_url, max_error_time = 3, verbose = FALSE)
 
       if (!is.null(post_data$post_main)) {
         out <- data.table::as.data.table(post_data$post_main)
@@ -62,10 +62,14 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
       }
       out
     }, error = function(e) {
-      message(e, "[url] ",x)
+      print(post_url)
+      message(e, "[url] ", post_url)
+      NULL
     }, warning = function(w) {
-      message(w, "[url] ",x)
+      message(w, "[url] ", post_url)
+      NULL
     })
+    out
   }
 
   res_list <- pbapply::pblapply(
@@ -73,6 +77,11 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
     post_urls,
     try_get_post_content
   )
+
+  # res_list <- lapply(
+  #   post_urls,
+  #   try_get_post_content
+  # )
 
   post_dt <- data.table::rbindlist(res_list, use.names = TRUE, fill = TRUE)
   post_dt
