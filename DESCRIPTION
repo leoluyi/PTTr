@@ -14,11 +14,13 @@ Depends:
     R (>= 3.3.0),
     magrittr,
     data.table
-Import: httr,
+Import:
+    assertthat,
+    httr,
     rvest,
     xml2,
     stringr,
     dplyr,
     parallel,
     pbapply
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

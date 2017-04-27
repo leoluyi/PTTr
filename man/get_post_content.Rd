@@ -16,4 +16,3 @@ Extract content of a post from a post url
 get_post_content("https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html")
 
 }
-
