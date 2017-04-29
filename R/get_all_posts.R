@@ -3,7 +3,8 @@
 #' @param board_name String PTT board name.
 #' @param max_post See \code{\link{get_urls}}().
 #' @param include_push Logical. Whether to include push data.
-#' @param mc.cores Number of parallel cores to use. Use \code{-1} to auto detect.
+#' @param parallel If \code{TRUE}, the default, will use parallel threads.
+#' @param mc.cores Number of parallel cores to use. Default \code{NULL} to auto detect.
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
