@@ -20,7 +20,6 @@ Import:
     rvest,
     xml2,
     stringr,
-    dplyr,
     parallel,
     pbapply
 RoxygenNote: 6.0.1

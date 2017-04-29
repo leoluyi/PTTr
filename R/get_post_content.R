@@ -83,17 +83,17 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   post_data %>% setDT
 
   ## push data
-  push_df <- dplyr::data_frame(push_tag = character(),
-                               push_uid = character(),
-                               push_text = character(),
-                               push_ip = character(),
-                               push_time = character())
+  push_df <- data.table(push_tag = character(),
+                        push_uid = character(),
+                        push_text = character(),
+                        push_ip = character(),
+                        push_time = character())
   push_nodes <- node %>% rvest::html_nodes("div.push")
   if (length(push_nodes)) {
     push_rows <- lapply(push_nodes,
                       function (x) {
                         push_text <- html_text(html_nodes(x, "span"))
-                        push <- dplyr::data_frame(
+                        push <- data.table(
                           push_tag = str_trim(push_text[1]),
                           push_uid = str_trim(push_text[2]),
                           push_text = str_replace(push_text[3], "^:", "") %>% str_trim(),
@@ -103,8 +103,8 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
                           push_time = str_extract(
                             str_trim(push_text[4]),
                             "\\d{2}\\/\\d{2}\\s\\d{2}:\\d{2}$"))
-                      }) %>% dplyr::bind_rows()
-    push_df <- push_df %>% dplyr::bind_rows(push_rows)
+                      }) %>% data.table::rbindlist()
+    push_df <- data.table::rbindlist(list(push_df, push_rows))
     push_df$post_id <- post_data$post_id
     push_df$post_url <- post_url
   }
@@ -153,7 +153,7 @@ print.ptt_post <- function(x, ..., max.lines = 10, width = getOption("width")) {
     cat("<EMPTY PUSH>\n")
   } else {
     cat("<PUSH CONTENT>\n")
-    head_push <- head(x$push)[c("push_tag", "push_uid", "push_text")]
+    head_push <- head(x$push)[, c("push_tag", "push_uid", "push_text")]
     apply(head_push, MARGIN = 1, FUN = function(x){
       cat("  ", x, "\n")
       invisible(NULL)
