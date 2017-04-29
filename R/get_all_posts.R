@@ -8,7 +8,7 @@
 #' @param ... other parameters passed to \code{\link{get_urls}}().
 #'
 #' @return data.table
-#' @import parallel pbapply
+#' @import data.table parallel pbapply
 #' @export
 #'
 #' @examples
