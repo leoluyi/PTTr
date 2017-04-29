@@ -4,9 +4,10 @@
 \alias{get_posts_list}
 \alias{get_urls}
 \alias{get_titles}
-\title{Extract list of urls, titles, nrec from a board}
+\title{Extract list of urls, titles, n_push from a board}
 \usage{
-get_posts_list(board_name, max_post = 1000L, mc.cores = -1, ...)
+get_posts_list(board_name, max_post = 1000L, parallel = TRUE,
+  mc.cores = NULL, ...)
 
 get_urls(board_name, max_post = 1000L, mc.cores = -1, ...)
 
@@ -18,10 +19,12 @@ get_titles(board_name, max_post = 1000L, mc.cores = -1, ...)
 \item{max_post}{Maximun number of the lastest posts. Default 1000.
 If set to \code{-1}, will get all of listpage_urls. [Caucious!].}
 
-\item{mc.cores}{Number of parallel cores to use. Use \code{-1} to auto detect.}
+\item{parallel}{If \code{TRUE}, the default, will use parallel threads.}
+
+\item{mc.cores}{Number of parallel cores to use. Default \code{NULL} to auto detect.}
 }
 \description{
-Extract list of urls, titles, nrec from a board
+Extract list of urls, titles, n_push from a board
 }
 \section{Functions}{
 \itemize{
