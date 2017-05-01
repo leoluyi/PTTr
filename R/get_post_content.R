@@ -54,12 +54,12 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
 
   post_data$title <- metaTemp[2] %>% str_trim()
   post_time <- metaTemp[3] %>% str_trim()
-  post_time_parsed <- post_time %>% strptime("%c", tz = "ROC") %>% as.POSIXct()
-  if (!is.na(post_time_parsed)) {
-    post_data$post_time <- post_time_parsed
-  } else {
-    post_data$post_time <- NA
-  }
+  post_time <- post_time %>% strptime("%c", tz = "ROC") %>% as.POSIXct()
+  # if (!is.na(post_time_parsed)) {
+  #   post_data$post_time <- post_time_parsed
+  # } else {
+  #   post_data$post_time <- NA
+  # }
 
   post_data$post_url <- post_url
   post_data$post_id <- str_match(post_url, "([^/]+)\\.html")[,2] %>% str_trim()
