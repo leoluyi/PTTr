@@ -7,8 +7,9 @@
 #' @import httr rvest data.table stringr
 #' @export
 get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
-  # function input: postUrl
   # post_url <- "https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html"
+  # post_url <- "https://www.ptt.cc/bbs/give/M.1493725282.A.75C.html"
+
   if (! length(post_url) == 1) {
     post_url <- post_url[1]
     warning("only use first url\n[", post_url, "]")
@@ -54,7 +55,7 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
 
   post_data$title <- metaTemp[2] %>% str_trim()
   post_time <- metaTemp[3] %>% str_trim()
-  post_time <- post_time %>% strptime("%c", tz = "ROC") %>% as.POSIXct()
+  post_data$post_time <- post_time %>% strptime("%c", tz = "ROC") %>% as.POSIXct()
   # if (!is.na(post_time_parsed)) {
   #   post_data$post_time <- post_time_parsed
   # } else {
@@ -124,7 +125,7 @@ print.ptt_post <- function(x, ..., max.lines = 10, width = getOption("width")) {
   cat("  Board: ", x$post$board, "\n", sep = "")
   cat("  Title: ", x$post$title, "\n", sep = "")
   cat("  Author: ", x$post$author, "\n", sep = "")
-  cat("  Post-Time: ", x$post$post_time, "\n\n", sep = "")
+  cat("  Post-Time: ", format(x$post$post_time, usetz = TRUE), "\n\n", sep = "")
 
   ## print
   # code modified from:
