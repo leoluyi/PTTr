@@ -2,9 +2,13 @@
 % Please edit documentation in R/get_all_posts.R
 \name{get_all_posts}
 \alias{get_all_posts}
+\alias{get_all_posts_from_url}
 \title{Extract list of posts from a board}
 \usage{
 get_all_posts(board_name, max_post = 1000, list_push = FALSE,
+  parallel = TRUE, mc.cores = NULL, ...)
+
+get_all_posts_from_url(post_urls, max_post = 1000, list_push = FALSE,
   parallel = TRUE, mc.cores = NULL, ...)
 }
 \arguments{
@@ -12,13 +16,15 @@ get_all_posts(board_name, max_post = 1000, list_push = FALSE,
 
 \item{max_post}{See \code{\link{get_post_urls}}().}
 
+\item{list_push}{If \code{TRUE}, push data will be column of list. Default is \code{FALSE}.}
+
 \item{parallel}{If \code{TRUE}, the default, will use parallel threads.}
 
 \item{mc.cores}{Number of parallel cores to use. Default \code{NULL} to auto detect.}
 
 \item{...}{other parameters passed to \code{\link{get_post_urls}}().}
 
-\item{include_push}{Logical. Whether to include push data.}
+\item{post_urls}{Post urls.}
 }
 \value{
 data.table
@@ -26,6 +32,11 @@ data.table
 \description{
 Extract list of posts from a board
 }
+\section{Functions}{
+\itemize{
+\item \code{get_all_posts_from_url}: Extract list of posts from a URLs
+}}
+
 \examples{
 get_all_posts("Gossiping", max_post = 10)
 
