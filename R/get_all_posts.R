@@ -47,13 +47,13 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
 #' @describeIn get_all_posts Extract list of posts from a URLs
 get_all_posts_from_url <- function(post_urls, max_post = 1000, list_push = FALSE,
                           parallel = TRUE, mc.cores = NULL, ...) {
-  # board_name = "Gossiping"
   # max_post = 20
   # list_push = TRUE
   # parallel = TRUE
   # mc.cores = NULL
-  # post_urls = "https://www.ptt.cc/bbs/Gossiping/M.1468224573.A.D15.html"
-  
+  # post_urls = c("https://www.ptt.cc/bbs/Gossiping/M.1492216404.A.80A.html",
+  #               "https://www.ptt.cc/bbs/give/M.1494149419.A.7B3.html")
+
   ## Setting # of parallel cores
   if (!parallel) {
     mc.cores <- 1L
@@ -76,11 +76,11 @@ get_all_posts_from_url <- function(post_urls, max_post = 1000, list_push = FALSE
   invisible(clusterEvalQ(cl, library(data.table)))
   
   res_list <- pbapply::pblapply(
-    cl=cl,
     post_urls,
     try_get_post_content,
     max_error_time = 3,
-    list_push = list_push
+    list_push = list_push,
+    cl=cl
   )
   
   # res_list <- lapply(

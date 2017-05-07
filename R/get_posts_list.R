@@ -105,16 +105,21 @@ get_post_url = function(listpage_urls, board_name, max_post = 1000L, mc.cores, .
   author <- res %>%
     lapply(function(x) x[["author"]]) %>%
     unlist(use.names = FALSE)
+  post_id <- res %>%
+    lapply(function(x) x[["post_id"]]) %>%
+    unlist(use.names = FALSE)
 
   if (max_post > 0) {
     post_urls <- post_urls %>% head(max_post)
     n_push <- n_push %>% head(max_post)
     title <- title %>% head(max_post)
     author <- author %>% head(max_post)
+    post_id <- post_id %>% head(max_post)
   }
 
   # function output: post_urls
-  list(post_urls = post_urls, n_push = n_push, title = title, author = author)
+  list(post_urls = post_urls, n_push = n_push, title = title, author = author,
+       post_id = post_id)
 }
 
 # single url
@@ -143,14 +148,16 @@ get_post_url_ <- function(listpage_url) {
     rvest::html_nodes(".author") %>%
     rvest::html_text() %>% 
     rev
+  post_id <- str_match(post_urls, "([^/]+)\\.html")[,2] %>% str_trim()
 
   keep <- which(author != "-")
   author <- author[keep]
   n_push <- n_push[keep]
 
-  if (identical(length(post_urls), length(n_push))) {
+  if (!identical(length(post_urls), length(n_push))) {
     warning(sprintf("length of post_urls and n_push are not the same in %s", listpage_url))
   }
 
-  list(post_urls = post_urls, n_push = n_push, title = title, author = author)
+  list(post_urls = post_urls, n_push = n_push, title = title, author = author,
+       post_id = post_id)
 }

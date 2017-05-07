@@ -10,9 +10,10 @@ get_post_content = function(post_url, max_error_time = 3, verbose = TRUE) {
   # post_url <- "https://www.ptt.cc/bbs/Gossiping/M.1467117389.A.62D.html"
   # post_url <- "https://www.ptt.cc/bbs/give/M.1493725282.A.75C.html"
 
+  post_url <- unlist(post_url, use.names = FALSE)
   if (! length(post_url) == 1) {
     post_url <- post_url[1]
-    warning("only use first url\n[", post_url, "]")
+    warning("only use first url\n[", post_url[[1]], "]")
   }
   res <- GET(post_url, set_cookies(over18 = 1))
 
