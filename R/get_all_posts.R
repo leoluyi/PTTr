@@ -1,11 +1,11 @@
 #' Extract list of posts from a board
 #'
 #' @param board_name String PTT board name.
-#' @param max_post See \code{\link{get_urls}}().
+#' @param max_post See \code{\link{get_post_urls}}().
 #' @param include_push Logical. Whether to include push data.
 #' @param parallel If \code{TRUE}, the default, will use parallel threads.
 #' @param mc.cores Number of parallel cores to use. Default \code{NULL} to auto detect.
-#' @param ... other parameters passed to \code{\link{get_urls}}().
+#' @param ... other parameters passed to \code{\link{get_post_urls}}().
 #'
 #' @return data.table
 #' @import data.table parallel pbapply
@@ -34,7 +34,7 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
     mc.cores <- as.integer(mc.cores)
   }
 
-  post_urls <- get_urls(board_name, max_post,
+  post_urls <- get_post_urls(board_name, max_post,
                         parallel = parallel, mc.cores = mc.cores)
 
   ## get articles

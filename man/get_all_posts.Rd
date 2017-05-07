@@ -10,13 +10,13 @@ get_all_posts(board_name, max_post = 1000, list_push = FALSE,
 \arguments{
 \item{board_name}{String PTT board name.}
 
-\item{max_post}{See \code{\link{get_urls}}().}
+\item{max_post}{See \code{\link{get_post_urls}}().}
 
 \item{parallel}{If \code{TRUE}, the default, will use parallel threads.}
 
 \item{mc.cores}{Number of parallel cores to use. Default \code{NULL} to auto detect.}
 
-\item{...}{other parameters passed to \code{\link{get_urls}}().}
+\item{...}{other parameters passed to \code{\link{get_post_urls}}().}
 
 \item{include_push}{Logical. Whether to include push data.}
 }

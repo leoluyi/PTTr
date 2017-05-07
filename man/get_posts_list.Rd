@@ -2,14 +2,15 @@
 % Please edit documentation in R/get_posts_list.R
 \name{get_posts_list}
 \alias{get_posts_list}
-\alias{get_urls}
+\alias{get_post_urls}
 \alias{get_titles}
 \title{Extract list of urls, titles, n_push from a board}
 \usage{
 get_posts_list(board_name, max_post = 1000L, parallel = TRUE,
   mc.cores = NULL, ...)
 
-get_urls(board_name, max_post = 1000L, mc.cores = -1, ...)
+get_post_urls(board_name, max_post = 1000L, parallel = TRUE,
+  mc.cores = NULL, ...)
 
 get_titles(board_name, max_post = 1000L, mc.cores = -1, ...)
 }
@@ -28,14 +29,14 @@ Extract list of urls, titles, n_push from a board
 }
 \section{Functions}{
 \itemize{
-\item \code{get_urls}: Get urls of posts in a board.
+\item \code{get_post_urls}: Get urls of posts in a board.
 
 \item \code{get_titles}: Get post titles of posts in a board.
 }}
 
 \examples{
 get_posts_list("Gossiping", max_post = 100)
-get_urls("Gossiping", max_post = 100)
+get_post_urls("Gossiping", max_post = 100)
 get_titles("Gossiping", max_post = 100)
 
 }

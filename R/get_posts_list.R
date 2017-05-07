@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' get_posts_list("Gossiping", max_post = 100)
-#' get_urls("Gossiping", max_post = 100)
+#' get_post_urls("Gossiping", max_post = 100)
 #' get_titles("Gossiping", max_post = 100)
 #'
 #' @export
@@ -45,7 +45,7 @@ get_posts_list <- function(board_name, max_post = 1000L,
 
 #' @export
 #' @describeIn get_posts_list Get urls of posts in a board.
-get_urls <- function(board_name, max_post = 1000L, parallel = TRUE, mc.cores = NULL, ...) {
+get_post_urls <- function(board_name, max_post = 1000L, parallel = TRUE, mc.cores = NULL, ...) {
   get_posts_list(board_name,
                  max_post=max_post, 
                  parallel=parallel,
