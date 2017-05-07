@@ -12,7 +12,8 @@ get_posts_list(board_name, max_post = 1000L, parallel = TRUE,
 get_post_urls(board_name, max_post = 1000L, parallel = TRUE,
   mc.cores = NULL, ...)
 
-get_titles(board_name, max_post = 1000L, mc.cores = -1, ...)
+get_titles(board_name, max_post = 1000L, parallel = TRUE, mc.cores = NULL,
+  ...)
 }
 \arguments{
 \item{board_name}{String of PTT board name.}

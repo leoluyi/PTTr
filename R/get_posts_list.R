@@ -30,7 +30,7 @@ get_posts_list <- function(board_name, max_post = 1000L,
 
   message(sprintf("Getting urls using %s thread(s)...", mc.cores), appendLF = FALSE)
   listpage_urls <- get_url_listpage(board_name)
-  out <- get_post_url(listpage_urls, max_post, mc.cores)
+  out <- get_post_url(listpage_urls, max_post=max_post, mc.cores=mc.cores)
   message(sprintf("(Got %s)", length(out[[1]])))
 
   tryCatch(
@@ -54,11 +54,14 @@ get_post_urls <- function(board_name, max_post = 1000L, parallel = TRUE, mc.core
 
 #' @export
 #' @describeIn get_posts_list Get post titles of posts in a board.
-get_titles <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
-  get_posts_list(board_name, max_post, mc.cores)[["title"]]
+get_titles <- function(board_name, max_post = 1000L, parallel = TRUE, mc.cores = NULL, ...) {
+  get_posts_list(board_name,
+                 max_post=max_post, 
+                 parallel=parallel,
+                 mc.cores=mc.cores)[["title"]]
 }
 
-get_post_url = function(listpage_urls, max_post = 1000L, mc.cores = 1, ...) {
+get_post_url = function(listpage_urls, board_name, max_post = 1000L, mc.cores, ...) {
   # function input: listpage_urls
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
