@@ -62,7 +62,7 @@ get_titles <- function(board_name, max_post = 1000L, parallel = TRUE, mc.cores =
 }
 
 get_post_url = function(listpage_urls, board_name, max_post = 1000L, mc.cores, ...) {
-  # function input: listpage_urls
+  # board_name = "Gossiping"
   # listpage_urls = get_url_listpage("Gossiping")[1:5]
 
   if (!is.numeric(max_post)) {
@@ -74,11 +74,12 @@ get_post_url = function(listpage_urls, board_name, max_post = 1000L, mc.cores, .
   if (max_post < 0) {
     urls <- listpage_urls
   } else {
-    url_front <- stringr::str_match(listpage_urls[[1]], "^(.*)index\\d+\\.html$")[,2]
+    url_front <- stringr::str_match(listpage_urls[[1]], "^(.*/)[^/]+.html$")[,2]
     page_num <- stringr::str_match(listpage_urls, "index(\\d+)\\.html$")[,2]
     urls <- page_num %>%
       as.integer %>%
-      sort(decreasing = TRUE) %>%
+      sort(decreasing = TRUE, na.last = F) %>%
+      `[<-`(which(is.na(.)), "") %>% 
       head(max_post/20 + 1) %>% # 20 posts per page
       paste0(url_front, "index", .,  ".html")
   }
@@ -117,26 +118,31 @@ get_post_url = function(listpage_urls, board_name, max_post = 1000L, mc.cores, .
 }
 
 # single url
-get_post_url_ = function(listpage_url) {
+get_post_url_ <- function(listpage_url) {
   # listpage_url = "https://www.ptt.cc/bbs/Gossiping/index18285.html"
+  # listpage_url = "https://www.ptt.cc/bbs/Gossiping/index.html"
 
   res <- httr::GET(listpage_url, httr::set_cookies(over18 = 1))
   node <- httr::content(res, encoding = "utf8")
-  node
+  
   post_urls <- node %>%
     rvest::html_nodes(".title a") %>%
     rvest::html_attr("href") %>%
-    sprintf("https://www.ptt.cc%s", .)
+    sprintf("https://www.ptt.cc%s", .) %>% 
+    rev
   n_push <- node %>%
-    rvest::html_nodes(".n_push") %>%
-    rvest::html_text()
+    rvest::html_nodes(".nrec") %>%
+    rvest::html_text() %>% 
+    rev
   title <- node %>%
     rvest::html_nodes(".title a") %>%
     rvest::html_text() %>%
-    stringr::str_trim()
+    stringr::str_trim() %>% 
+    rev
   author <- node %>%
     rvest::html_nodes(".author") %>%
-    rvest::html_text()
+    rvest::html_text() %>% 
+    rev
 
   keep <- which(author != "-")
   author <- author[keep]
