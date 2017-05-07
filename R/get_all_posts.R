@@ -34,10 +34,11 @@ get_all_posts <- function(board_name, max_post = 1000, list_push = FALSE,
     mc.cores <- as.integer(mc.cores)
   }
 
-  post_urls <- get_urls(board_name, max_post)
+  post_urls <- get_urls(board_name, max_post,
+                        parallel = parallel, mc.cores = mc.cores)
 
   ## get articles
-  message(sprintf("Getting %s posts with %s threads...",
+  message(sprintf("Getting %s posts with %s thread(s)...",
                   length(post_urls), mc.cores))
 
   cl <- parallel::makeCluster(mc.cores)

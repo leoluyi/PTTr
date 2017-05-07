@@ -28,7 +28,7 @@ get_posts_list <- function(board_name, max_post = 1000L,
     mc.cores <- 1L
   }
 
-  message(sprintf("Getting urls using %s threads...", mc.cores), appendLF = FALSE)
+  message(sprintf("Getting urls using %s thread(s)...", mc.cores), appendLF = FALSE)
   listpage_urls <- get_url_listpage(board_name)
   out <- get_post_url(listpage_urls, max_post, mc.cores)
   message(sprintf("(Got %s)", length(out[[1]])))
@@ -45,8 +45,11 @@ get_posts_list <- function(board_name, max_post = 1000L,
 
 #' @export
 #' @describeIn get_posts_list Get urls of posts in a board.
-get_urls <- function(board_name, max_post = 1000L, mc.cores = -1, ...) {
-  get_posts_list(board_name, max_post, mc.cores)[["post_urls"]]
+get_urls <- function(board_name, max_post = 1000L, parallel = TRUE, mc.cores = NULL, ...) {
+  get_posts_list(board_name,
+                 max_post=max_post, 
+                 parallel=parallel,
+                 mc.cores=mc.cores)[["post_urls"]]
 }
 
 #' @export
