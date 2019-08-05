@@ -13,8 +13,7 @@ License: FreeBSD
 Depends:
     R (>= 3.3.0),
     magrittr,
-    data.table,
-    dplyr
+    data.table
 Imports:
     assertthat,
     httr,
